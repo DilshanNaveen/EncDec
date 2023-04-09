@@ -62,31 +62,52 @@ function App() {
 
   return (
     <GradientBackground>
+      <Typography variant="h2" align="center" gutterBottom>
+          Encryption & Decryption
+      </Typography>
+      <br/>
+      <br/>
       <Tabs value={tabValue} onChange={handleTabChange}>
         <Tab label="Encrypt plain text" />
         <Tab label="Decrypt text with key" />
       </Tabs>
 
       <TabPanel value={tabValue} index={0}>
-        <Typography variant="h6">Plain Text</Typography>
-        <TextField multiline label="Plain Text" rows={4} fullWidth value={plainText} onChange={(e) => setPlainText(e.target.value)} />
+        <Box mt={1}>
+          <Typography variant="h6">Plain Text</Typography>
+        </Box>
+        <Box mt={1}>
+          <TextField multiline label="Plain Text" rows={4} fullWidth value={plainText} onChange={(e) => setPlainText(e.target.value)} />
+        </Box>
         <Box mt={2}>
           <TextField type='password' label="Key" value={encryptKey} onChange={(e) => setEncryptKey(e.target.value)} />
           <Button onClick={handleEncrypt}>Encrypt</Button>
         </Box>
-        <Typography variant="h6">Encrypted Text</Typography>
-        <TextField multiline rows={4} fullWidth value={encryptedText} label="Encrypted Text" />
+        <Box mt={1}>
+          <Typography variant="h6">Encrypted Text</Typography>
+        </Box>
+        <Box mt={1}>
+          <TextField multiline rows={4} fullWidth value={encryptedText} label="Encrypted Text" />
+        </Box>
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
-        <Typography variant="h6">Encrypted Text</Typography>
-        <TextField multiline rows={4} label="Encrypted Text" fullWidth value={encryptedText} onChange={(e) => setEncryptedText(e.target.value)} />
+        <Box mt={1}>
+          <Typography variant="h6">Encrypted Text</Typography>
+        </Box>
+        <Box mt={1}>
+          <TextField multiline rows={4} label="Encrypted Text" fullWidth value={encryptedText} onChange={(e) => setEncryptedText(e.target.value)} />
+        </Box>
         <Box mt={2}>
           <TextField type='password' label="Key" value={decryptKey} onChange={(e) => setDecryptKey(e.target.value)} />
           <Button onClick={handleDecrypt}>Decrypt</Button>
         </Box>
-        <Typography variant="h6">Decrypted Text</Typography>
-        <TextField multiline rows={4} fullWidth value={decryptedText} label="Plain Text" />
+        <Box mt={1}>
+          <Typography variant="h6">Decrypted Text</Typography>
+        </Box>
+        <Box mt={1}>
+          <TextField multiline rows={4} fullWidth value={decryptedText} label="Plain Text" />
+        </Box>
       </TabPanel>
     </GradientBackground>
   );

@@ -7,16 +7,26 @@ import '@fontsource/roboto/300.css';
 import '@fontsource/roboto/400.css';
 import '@fontsource/roboto/500.css';
 import '@fontsource/roboto/700.css';
-import styled from '@emotion/styled';
-import { Container } from '@mui/material';
+import { createTheme, ThemeProvider } from '@mui/material/styles';
+
 
 const root = ReactDOM.createRoot(
   document.getElementById('root') as HTMLElement
 );
 
+const theme = createTheme({
+  palette: {
+    text: {
+      primary: '#000000',
+    },
+  },
+});
+
 root.render(
   <React.StrictMode>
+    <ThemeProvider theme={theme}>
       <App />
+    </ThemeProvider>
   </React.StrictMode>
 );
 
