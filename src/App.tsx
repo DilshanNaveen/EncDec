@@ -1,111 +1,94 @@
-import React, { useState } from "react";
-import logo from "./logo.svg";
-import "./App.css";
-import { Button, Grid, Paper, TextField, styled, Container } from "@mui/material";
+import React, { useState } from 'react';
+import { Box, Button, Container, Tab, Tabs, TextField, Typography } from '@mui/material';
+import styled from '@emotion/styled';
 import { AES, enc } from "crypto-js";
 
+const GradientBackground = styled(Container)`
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+`;
+
+interface TabPanelProps {
+  children: React.ReactNode;
+  index: number;
+  value: number;
+}
+
+function TabPanel(props: TabPanelProps) {
+  const { children, value, index } = props;
+
+  return (
+    <div role="tabpanel" hidden={value !== index}>
+      {value === index && <Box>{children}</Box>}
+    </div>
+  );
+}
 
 function App() {
-  const [content, setContent] = useState<string>();
-  const [key, setKey] = useState<string>();
-  const [encrypted, setEncrypted] = useState<string>();
+  const [tabValue, setTabValue] = useState(0);
+  const [plainText, setPlainText] = useState('');
+  const [encryptKey, setEncryptKey] = useState('');
+  const [encryptedText, setEncryptedText] = useState('');
+  const [decryptKey, setDecryptKey] = useState('');
+  const [decryptedText, setDecryptedText] = useState('');
 
-  const encrypt = () => {
-    if (content && key) {
-      const encrypted = AES.encrypt(content, key);
-      setEncrypted(encrypted.toString());
+  const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
+    setPlainText('');
+    setEncryptKey('');
+    setEncryptedText('');
+    setDecryptKey('');
+    setDecryptedText('');
+    setTabValue(newValue);
+  };
+
+  const handleEncrypt = () => {
+    // Encryption logic here
+    if (plainText && encryptKey) {
+      const encrypted = AES.encrypt(plainText, encryptKey);
+      setEncryptedText(encrypted.toString());
     }
   };
 
-  const decrypt = () => {
-    if (encrypted && key) {
-      const bytes = AES.decrypt(encrypted, key);
+  const handleDecrypt = () => {
+    // Decryption logic here
+    if (encryptedText && encryptKey) {
+      const bytes = AES.decrypt(encryptedText, encryptKey);
       const decrypted = bytes.toString(enc.Utf8);
-      setContent(decrypted);
+      setDecryptedText(decrypted);
     }
   };
 
   return (
-    <Container style={{ padding: 200 }}>
-      <Grid container>
-        <Grid xs={3}>
-            <TextField
-              id="outlined-basic"
-              label="Content"
-              multiline
-              variant="outlined"
-              onKeyUp={(e: any) => setContent(e.target.value)}
-              fullWidth
-              rows={4}
-            />
-        </Grid>
-        <Grid xs={3}>
-            <TextField
-              id="filled-basic"
-              label="Password/Key"
-              variant="outlined"
-              multiline
-              onKeyUp={(e: any) => setKey(e.target.value)}
-              fullWidth
-              rows={4}
-            />
-        </Grid>
-        <Grid xs={3}>
-            <TextField
-              id="standard-basic"
-              label="Encrypted Text"
-              variant="standard"
-              multiline
-              value={encrypted}
-              focused
-              fullWidth
-              rows={4}
-            />
-        </Grid>
-        <Grid xs={3}>
-            <Button variant="contained" onClick={encrypt}>
-              Encrypt
-            </Button>
-        </Grid>
+    <GradientBackground>
+      <Tabs value={tabValue} onChange={handleTabChange}>
+        <Tab label="Encrypt plain text" />
+        <Tab label="Decrypt text with key" />
+      </Tabs>
 
-        <Grid xs={3}>
-            <TextField
-              id="standard-basic"
-              label="Encrypted Text"
-              variant="standard"
-              multiline
-              rows={4}
-              onKeyUp={(e: any) => setEncrypted(e.target.value)}
-            />
-        </Grid>
-        <Grid xs={3}>
-            <TextField
-              id="filled-basic"
-              label="Password/Key"
-              variant="filled"
-              multiline
-              onKeyUp={(e: any) => setKey(e.target.value)}
-              rows={4}
-            />
-        </Grid>
-        <Grid xs={3}>
-            <TextField
-              id="outlined-basic"
-              label="Content"
-              variant="outlined"
-              value={content}
-              focused
-              rows={4}
-              multiline
-            />
-        </Grid>
-        <Grid xs={3}>
-            <Button variant="contained" onClick={decrypt}>
-              Decrypt
-            </Button>
-        </Grid>
-      </Grid>
-    </Container>
+      <TabPanel value={tabValue} index={0}>
+        <Typography variant="h6">Plain Text</Typography>
+        <TextField multiline label="Plain Text" rows={4} fullWidth value={plainText} onChange={(e) => setPlainText(e.target.value)} />
+        <Box mt={2}>
+          <TextField type='password' label="Key" value={encryptKey} onChange={(e) => setEncryptKey(e.target.value)} />
+          <Button onClick={handleEncrypt}>Encrypt</Button>
+        </Box>
+        <Typography variant="h6">Encrypted Text</Typography>
+        <TextField multiline rows={4} fullWidth value={encryptedText} label="Encrypted Text" />
+      </TabPanel>
+
+      <TabPanel value={tabValue} index={1}>
+        <Typography variant="h6">Encrypted Text</Typography>
+        <TextField multiline rows={4} label="Encrypted Text" fullWidth value={encryptedText} onChange={(e) => setEncryptedText(e.target.value)} />
+        <Box mt={2}>
+          <TextField type='password' label="Key" value={decryptKey} onChange={(e) => setDecryptKey(e.target.value)} />
+          <Button onClick={handleDecrypt}>Decrypt</Button>
+        </Box>
+        <Typography variant="h6">Decrypted Text</Typography>
+        <TextField multiline rows={4} fullWidth value={decryptedText} label="Plain Text" />
+      </TabPanel>
+    </GradientBackground>
   );
 }
 
