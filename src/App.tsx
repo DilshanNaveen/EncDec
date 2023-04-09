@@ -1,7 +1,8 @@
 import React, { useState } from 'react';
-import { Box, Button, Container, Tab, Tabs, TextField, Typography, Snackbar, Alert as MuiAlert } from '@mui/material';
+import { Box, Button, Container, Tab, Tabs, TextField, Typography, Snackbar, Alert as MuiAlert, IconButton, InputAdornment } from '@mui/material';
 import styled from '@emotion/styled';
 import { AES, enc } from "crypto-js";
+import FileCopyIcon from '@mui/icons-material/FileCopy';
 
 const GradientBackground = styled(Container)`
   min-height: 100vh;
@@ -83,6 +84,23 @@ function App() {
     setDecryptedText(decrypted);
   };
 
+  const handleCopy = async (text: string) => {
+    try {
+      await navigator.clipboard.writeText(text);
+      setAlert({
+        open: true,
+        message: 'Text copied to clipboard!',
+        severity: 'success',
+      });
+    } catch (err) {
+      setAlert({
+        open: true,
+        message: 'Failed to copy the text!',
+        severity: 'error',
+      });
+    }
+  };
+
   return (
     <GradientBackground>
       <Typography variant="h2" align="center" gutterBottom>
@@ -113,8 +131,24 @@ function App() {
           <Typography variant="h6">Encrypted Text</Typography>
         </Box>
         <Box mt={1}>
-          <TextField multiline rows={4} fullWidth value={encryptedText} label="Encrypted Text" />
+          <TextField
+            multiline
+            rows={4}
+            fullWidth
+            value={encryptedText}
+            label="Encrypted Text"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => handleCopy(encryptedText)}>
+                    <FileCopyIcon />
+                  </IconButton>
+                </InputAdornment>
+              )
+            }}
+          />
         </Box>
+
       </TabPanel>
 
       <TabPanel value={tabValue} index={1}>
@@ -132,7 +166,22 @@ function App() {
           <Typography variant="h6">Decrypted Text</Typography>
         </Box>
         <Box mt={1}>
-          <TextField multiline rows={4} fullWidth value={decryptedText} label="Plain Text" />
+          <TextField
+            multiline
+            rows={4}
+            fullWidth
+            value={decryptedText}
+            label="Plain Text"
+            InputProps={{
+              endAdornment: (
+                <InputAdornment position="end">
+                  <IconButton onClick={() => handleCopy(decryptedText)}>
+                    <FileCopyIcon />
+                  </IconButton>
+                </InputAdornment>
+              ),
+            }}
+          />
         </Box>
       </TabPanel>
       <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleCloseAlert} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
