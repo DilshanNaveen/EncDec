@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Box, Button, Container, Tab, Tabs, TextField, Typography } from '@mui/material';
+import { Box, Button, Container, Tab, Tabs, TextField, Typography, Snackbar, Alert as MuiAlert } from '@mui/material';
 import styled from '@emotion/styled';
 import { AES, enc } from "crypto-js";
 
@@ -33,6 +33,7 @@ function App() {
   const [encryptedText, setEncryptedText] = useState('');
   const [decryptKey, setDecryptKey] = useState('');
   const [decryptedText, setDecryptedText] = useState('');
+  const [alert, setAlert] = useState<any>({ open: false, message: '', severity: 'error' });
 
   const handleTabChange = (event: React.SyntheticEvent, newValue: number) => {
     setPlainText('');
@@ -43,30 +44,55 @@ function App() {
     setTabValue(newValue);
   };
 
+  const showAlert = (message: string, severity: 'error' | 'success') => {
+    setAlert({ open: true, message, severity });
+  };
+
+  const handleCloseAlert = () => {
+    setAlert({ ...alert, open: false });
+  };
+
   const handleEncrypt = () => {
     // Encryption logic here
-    if (plainText && encryptKey) {
-      const encrypted = AES.encrypt(plainText, encryptKey);
-      setEncryptedText(encrypted.toString());
+    if (!plainText) {
+      showAlert('Please enter plain text to encrypt.', 'error');
+      return;
     }
+    if (!encryptKey) {
+      showAlert('Please enter a key for encryption.', 'error');
+      return;
+    }
+
+    const encrypted = AES.encrypt(plainText, encryptKey);
+    setEncryptedText(encrypted.toString());
   };
 
   const handleDecrypt = () => {
     // Decryption logic here
-    if (encryptedText && encryptKey) {
-      const bytes = AES.decrypt(encryptedText, encryptKey);
-      const decrypted = bytes.toString(enc.Utf8);
-      setDecryptedText(decrypted);
+    if (!encryptedText) {
+      showAlert('Please enter encrypted text to decrypt.', 'error');
+      return;
     }
+    if (!decryptKey) {
+      showAlert('Please enter a key for decryption.', 'error');
+      return;
+    }
+
+    const bytes = AES.decrypt(encryptedText, decryptKey);
+    const decrypted = bytes.toString(enc.Utf8);
+    setDecryptedText(decrypted);
   };
 
   return (
     <GradientBackground>
       <Typography variant="h2" align="center" gutterBottom>
-          Encryption & Decryption
+        Encryption & Decryption
       </Typography>
-      <br/>
-      <br/>
+      <Typography variant="body1" align="center" gutterBottom>
+        This web app allows you to securely encrypt and decrypt text using the AES encryption algorithm. Enter the plain text and a secret key to encrypt the text. To decrypt the encrypted text, provide the same secret key used for encryption.
+      </Typography>
+      <br />
+      <br />
       <Tabs value={tabValue} onChange={handleTabChange}>
         <Tab label="Encrypt plain text" />
         <Tab label="Decrypt text with key" />
@@ -109,8 +135,14 @@ function App() {
           <TextField multiline rows={4} fullWidth value={decryptedText} label="Plain Text" />
         </Box>
       </TabPanel>
+      <Snackbar open={alert.open} autoHideDuration={6000} onClose={handleCloseAlert} anchorOrigin={{ vertical: 'top', horizontal: 'right' }}>
+        <MuiAlert onClose={handleCloseAlert} severity={alert.severity} elevation={6} variant="filled">
+          {alert.message}
+        </MuiAlert>
+      </Snackbar>
     </GradientBackground>
   );
 }
 
 export default App;
+
