@@ -29,7 +29,8 @@
     "build": "react-scripts build",
     "test": "react-scripts test",
     "eject": "react-scripts eject",
-    "lint": "eslint src"
+    "lint": "eslint src",
+    "build-zip": "npm run build && cd build && zip -r ../build.zip . && cd .."
   },
   "eslintConfig": {
     "extends": [
